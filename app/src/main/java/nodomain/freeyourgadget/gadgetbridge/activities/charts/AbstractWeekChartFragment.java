@@ -115,6 +115,7 @@ public abstract class AbstractWeekChartFragment extends AbstractChartFragment {
 
         BarData barData = new BarData(set);
         barData.setValueTextColor(Color.GRAY); //prevent tearing other graph elements with the black text. Another approach would be to hide the values cmpletely with data.setDrawValues(false);
+        barData.setValueTextSize(10f);
 
         LimitLine target = new LimitLine(mTargetValue);
         barChart.getAxisLeft().removeAllLimitLines();
@@ -191,6 +192,7 @@ public abstract class AbstractWeekChartFragment extends AbstractChartFragment {
     private void setupTodayPieChart() {
         mTodayPieChart.setBackgroundColor(BACKGROUND_COLOR);
         mTodayPieChart.getDescription().setTextColor(DESCRIPTION_COLOR);
+        mTodayPieChart.setEntryLabelColor(DESCRIPTION_COLOR);
         mTodayPieChart.getDescription().setText(getPieDescription(mTargetValue));
 //        mTodayPieChart.setNoDataTextDescription("");
         mTodayPieChart.setNoDataText("");

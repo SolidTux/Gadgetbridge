@@ -41,9 +41,6 @@ import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
-import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
-import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.AlarmClockReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.AlarmReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.BluetoothConnectReceiver;
@@ -138,7 +135,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOT
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_SUBJECT;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_TITLE;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_TYPE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_PERFORM_PAIR;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CONNECT_FIRST_TIME;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_URI;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_VIBRATION_INTENSITY;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_WEATHER_CURRENTCONDITION;
@@ -209,14 +206,6 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     boolean enableReceivers = mDeviceSupport != null && (mDeviceSupport.useAutoConnect() || mGBDevice.isInitialized());
                     setReceiversEnableState(enableReceivers);
                     GB.updateNotification(mGBDevice.getName() + " " + mGBDevice.getStateString(), mGBDevice.isInitialized(), context);
-
-                    if (device.isInitialized()) {
-                        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            DaoSession session = dbHandler.getDaoSession();
-                            DBHelper.getDevice(device, session); // implicitly creates the device in database if not present, and updates device attributes
-                        } catch (Exception ignore) {
-                        }
-                    }
                 } else {
                     LOG.error("Got ACTION_DEVICE_CHANGED from unexpected device: " + mGBDevice);
                 }
@@ -252,7 +241,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         }
 
         String action = intent.getAction();
-        boolean pair = intent.getBooleanExtra(EXTRA_PERFORM_PAIR, false);
+        boolean firstTime = intent.getBooleanExtra(EXTRA_CONNECT_FIRST_TIME, false);
 
         if (action == null) {
             LOG.info("no action");
@@ -312,8 +301,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                         DeviceSupport deviceSupport = mFactory.createDeviceSupport(gbDevice);
                         if (deviceSupport != null) {
                             setDeviceSupport(deviceSupport);
-                            if (pair) {
-                                deviceSupport.pair();
+                            if (firstTime) {
+                                deviceSupport.connectFirstTime();
                             } else {
                                 deviceSupport.setAutoReconnect(autoReconnect);
                                 deviceSupport.connect();

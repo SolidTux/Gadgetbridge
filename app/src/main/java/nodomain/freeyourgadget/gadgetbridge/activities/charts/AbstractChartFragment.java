@@ -93,7 +93,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
  * shift the date by one day.
  */
 public abstract class AbstractChartFragment extends AbstractGBFragment {
-    protected final int ANIM_TIME = 350;
+    protected final int ANIM_TIME = 250;
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractChartFragment.class);
 
@@ -154,10 +154,10 @@ public abstract class AbstractChartFragment extends AbstractGBFragment {
         mIntentFilterActions = new HashSet<>();
         if (intentFilterActions != null) {
             mIntentFilterActions.addAll(Arrays.asList(intentFilterActions));
-            mIntentFilterActions.add(ChartsHost.DATE_NEXT);
-            mIntentFilterActions.add(ChartsHost.DATE_PREV);
-            mIntentFilterActions.add(ChartsHost.REFRESH);
         }
+        mIntentFilterActions.add(ChartsHost.DATE_NEXT);
+        mIntentFilterActions.add(ChartsHost.DATE_PREV);
+        mIntentFilterActions.add(ChartsHost.REFRESH);
     }
 
     @Override
@@ -234,7 +234,7 @@ public abstract class AbstractChartFragment extends AbstractGBFragment {
     }
 
     protected void showDateBar(boolean show) {
-        getChartsHost().getDateBar().setVisibility(show ? View.VISIBLE : View.GONE);
+        getChartsHost().getDateBar().setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
